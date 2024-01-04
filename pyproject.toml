@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "forager-task"
+version = "0.1.0"
+description = ""
+authors = ["AlexandrZhydyk <zhydykalex@ukr.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+wemake-python-styleguide = "^0.18.0"
+python-dotenv = "^1.0.0"
+pydantic = "^2.5.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
