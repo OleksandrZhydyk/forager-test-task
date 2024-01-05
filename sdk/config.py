@@ -1,3 +1,5 @@
+"""The module contains all config info."""
+
 import os
 
 from dotenv import load_dotenv

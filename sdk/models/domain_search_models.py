@@ -1,12 +1,16 @@
-from typing import List, Any
+"""The module represents data structures of response object on domain_search request."""
+
+from typing import Any, List
 
 from pydantic.dataclasses import dataclass
 
-from sdk.filter import Filter, FilterChain
+from sdk.filter.base_filter import Filter, FilterChain
 
 
 @dataclass
 class DomainSearchSourcesInput:
+    """Represents data structure of source that is related to the email."""
+
     domain: str
     uri: str
     extracted_on: str
@@ -16,12 +20,16 @@ class DomainSearchSourcesInput:
 
 @dataclass
 class DomainSearchVerificationInput:
+    """Represents data structure of verification key of domain_search data."""
+
     date: str | None
     status: str | None
 
 
 @dataclass
 class DomainSearchDataEmailsInput:
+    """Represents data structure of emails from domain_search."""
+
     value: str
     type: str
     confidence: int
@@ -39,6 +47,8 @@ class DomainSearchDataEmailsInput:
 
 @dataclass
 class DomainSearchDataInput:
+    """Represents data structure of domain_search."""
+
     domain: str | None
     disposable: bool
     webmail: bool
@@ -64,6 +74,8 @@ class DomainSearchDataInput:
 
 @dataclass
 class DomainSearchMetaParamsInput:
+    """Represents search meta params of domain_search."""
+
     domain: str | None
     company: str | None
     type: str | None
@@ -73,6 +85,8 @@ class DomainSearchMetaParamsInput:
 
 @dataclass
 class DomainSearchMetaInput:
+    """Represents metadata of domain_search."""
+
     results: int
     limit: int
     offset: int
@@ -81,6 +95,8 @@ class DomainSearchMetaInput:
 
 @dataclass
 class DomainSearchInput:
+    """Main dataclass for representation of domain_search response."""
+
     data: DomainSearchDataInput
     meta: DomainSearchMetaInput
 
@@ -118,12 +134,16 @@ class DomainSearchInput:
         :return: Updated email data object.
         """
         for key, user_data in enumerate(self.data.emails):
-            if hasattr(user_data, update_field):
+            if self._is_obj_has_attr(user_data, update_field):
                 if user_data.value == email:
                     setattr(self.data.emails[key], update_field, update_value)
                     return user_data
             else:
-                raise ValueError(f"{update_field} doesn't exist in {user_data}")
+                raise ValueError(
+                    "{update_field} doesn't exist in {user_data}".format(
+                        update_field=update_field, user_data=user_data,
+                    ),
+                )
 
     def delete_item(self, email: str) -> bool | None:
         """
@@ -136,7 +156,7 @@ class DomainSearchInput:
             if user_data.value == email:
                 del self.data.emails[key]
                 return True
-        raise ValueError(f"Item with {email} doesn't exist")
+        raise ValueError("Item with {email} doesn't exist".format(email=email))
 
     def create_item(self, email_obj_data: DomainSearchDataEmailsInput) -> None:
         """
@@ -147,46 +167,9 @@ class DomainSearchInput:
         """
         self.data.emails.append(email_obj_data)
 
-
-@dataclass
-class EmailVerifierSourcesInput:
-    domain: str
-    uri: str
-    extracted_on: str
-    last_seen_on: str
-    still_on_page: bool
-
-
-@dataclass
-class EmailVerifierDataInput:
-    status: str
-    result: str
-    _deprecation_notice: str
-    score: int
-    email: str
-    regexp: bool
-    gibberish: bool
-    disposable: bool
-    webmail: bool
-    mx_records: bool
-    smtp_server: bool
-    smtp_check: bool
-    accept_all: bool
-    block: bool
-    sources: List[EmailVerifierSourcesInput]
-
-
-@dataclass
-class EmailVerifierMetaParamsInput:
-    email: str
-
-
-@dataclass
-class EmailVerifierMetaInput:
-    params: EmailVerifierMetaParamsInput
-
-
-@dataclass
-class EmailVerifierInput:
-    data: EmailVerifierDataInput
-    meta: EmailVerifierMetaInput
+    def _is_obj_has_attr(self, email_obj: DomainSearchDataEmailsInput, attr: str) -> bool:
+        try:
+            getattr(email_obj, attr)
+        except AttributeError:
+            return False
+        return True

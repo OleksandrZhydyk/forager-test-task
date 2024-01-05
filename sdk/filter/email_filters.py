@@ -1,19 +1,9 @@
-from typing import TypeVar
+"""The module contains available emails filters."""
 
-T = TypeVar('T')
+from typing import List
 
-
-class Filter:
-    """Represent the required interface for all filters."""
-
-    def apply(self, data: T) -> T:
-        """
-        Represent the required interface method for applying filters.
-
-        :param data: The data that should be filtered.
-        :return: The filtered data.
-        """
-        ...
+from sdk.filter.base_filter import Filter
+from sdk.models.domain_search_models import DomainSearchDataEmailsInput
 
 
 class FirstNameFilter(Filter):
@@ -23,14 +13,14 @@ class FirstNameFilter(Filter):
         """Initialize class Filter instance and store filter parameter."""
         self.first_name = first_name
 
-    def apply(self, data: T) -> T:
+    def apply(self, emails: List[DomainSearchDataEmailsInput]) -> List[DomainSearchDataEmailsInput]:
         """
         Filter data by first_name parameter.
 
-        :param data: The data that should be filtered.
+        :param emails: The data that should be filtered.
         :return: The filtered data.
         """
-        return [item for item in data if item.first_name == self.first_name]
+        return [email for email in emails if email.first_name == self.first_name]
 
 
 class LastNameFilter(Filter):
@@ -40,14 +30,14 @@ class LastNameFilter(Filter):
         """Initialize class Filter instance and store filter parameter."""
         self.last_name = last_name
 
-    def apply(self, data: T) -> T:
+    def apply(self, emails: List[DomainSearchDataEmailsInput]) -> List[DomainSearchDataEmailsInput]:
         """
         Filter data by last_name parameter.
 
-        :param data: The data that should be filtered.
+        :param emails: The data that should be filtered.
         :return: The filtered data.
         """
-        return [item for item in data if item.last_name == self.last_name]
+        return [email for email in emails if email.last_name == self.last_name]
 
 
 class ConfidenceMoreThanFilter(Filter):
@@ -57,14 +47,14 @@ class ConfidenceMoreThanFilter(Filter):
         """Initialize class Filter instance and store filter parameter."""
         self.confidence = confidence
 
-    def apply(self, data: T) -> T:
+    def apply(self, emails: List[DomainSearchDataEmailsInput]) -> List[DomainSearchDataEmailsInput]:
         """
         Filter data by confidence parameter.
 
-        :param data: The data that should be filtered.
+        :param emails: The data that should be filtered.
         :return: The filtered data.
         """
-        return [item for item in data if item.confidence > self.confidence]
+        return [email for email in emails if email.confidence > self.confidence]
 
 
 class ConfidenceLessThanFilter(Filter):
@@ -74,14 +64,14 @@ class ConfidenceLessThanFilter(Filter):
         """Initialize class Filter instance and store filter parameter."""
         self.confidence = confidence
 
-    def apply(self, data: T) -> T:
+    def apply(self, emails: List[DomainSearchDataEmailsInput]) -> List[DomainSearchDataEmailsInput]:
         """
         Filter data by confidence parameter.
 
-        :param data: The data that should be filtered.
+        :param emails: The data that should be filtered.
         :return: The filtered data.
         """
-        return [item for item in data if item.confidence < self.confidence]
+        return [email for email in emails if email.confidence < self.confidence]
 
 
 class SeniorityFilter(Filter):
@@ -91,14 +81,14 @@ class SeniorityFilter(Filter):
         """Initialize class Filter instance and store filter parameter."""
         self.seniority = seniority
 
-    def apply(self, data: T) -> T:
+    def apply(self, emails: List[DomainSearchDataEmailsInput]) -> List[DomainSearchDataEmailsInput]:
         """
         Filter data by seniority parameter.
 
-        :param data: The data that should be filtered.
+        :param emails: The data that should be filtered.
         :return: The filtered data.
         """
-        return [item for item in data if item.seniority == self.seniority]
+        return [email for email in emails if email.seniority == self.seniority]
 
 
 class DepartmentFilter(Filter):
@@ -108,40 +98,11 @@ class DepartmentFilter(Filter):
         """Initialize class Filter instance and store filter parameter."""
         self.department = department
 
-    def apply(self, data: T) -> T:
+    def apply(self, emails: List[DomainSearchDataEmailsInput]) -> List[DomainSearchDataEmailsInput]:
         """
         Filter data by department parameter.
 
-        :param data: The data that should be filtered.
+        :param emails: The data that should be filtered.
         :return: The filtered data.
         """
-        return [item for item in data if item.department == self.department]
-
-
-class FilterChain:
-    """Collect filters and implement apply filters functionality to the data."""
-
-    def __init__(self):
-        """Initialize FilterChain instance and storage for filters to apply."""
-        self.filters = []
-
-    def add_filter(self, filtr: Filter):
-        """
-        Add specified filter to self.filters storage.
-
-        :param filtr: Needed filter, should be class Filter instance.
-        :return: Current FilterChain class instance.
-        """
-        self.filters.append(filtr)
-        return self
-
-    def apply_all(self, data: T) -> T:
-        """
-        Apply all filters from self.filter to the passed data.
-
-        :param data: Data to filter.
-        :return: Filtered data.
-        """
-        for filtr in self.filters:
-            data = filtr.apply(data)
-        return data
+        return [email for email in emails if email.department == self.department]

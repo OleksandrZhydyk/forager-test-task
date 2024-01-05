@@ -1,12 +1,12 @@
 """Represent all available classes to make a HTTP requests."""
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any, Dict
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
-from sdk.exceptions import APIRetryExceededError, APIConnectionError, APIIncorrectRequestError
+from sdk.exceptions import APIConnectionError, APIIncorrectRequestError, APIRetryExceededError
 
 
 class BaseClient(ABC):
@@ -15,7 +15,6 @@ class BaseClient(ABC):
     @abstractmethod
     def get(self, *args, **kwargs):
         """Represent the required interface method for HTTP GET request."""
-        ...
 
 
 class RequestClient(BaseClient):
@@ -31,27 +30,24 @@ class RequestClient(BaseClient):
     def get(
         self,
         url: str,
-        params: Dict[str, str] = None,
-        headers: Dict[str, str] = None,
-        proxies: Dict[str, str] = None,
+        request_params: Dict[str, str] | None = None,
+        headers: Dict[str, str] | None = None,
         timeout: int = default_timeout,
     ) -> Dict[Any] | None:
         """
         Send HTTP GET request to the source.
 
         :param url: Requested url.
-        :param params: Needed query parameters.
+        :param request_params: Needed query parameters.
         :param headers: Needed request headers.
-        :param proxies: Needed request proxies.
         :param timeout: Needed request timeout in seconds.
         :return: Requested data or errors: (APIRetryExceededError, APIConnectionError, APIIncorrectRequestError)
         """
         try:
             res = self.session.get(
                 url,
-                params=params,
+                params=request_params,
                 headers=headers,
-                proxies=proxies,
                 timeout=timeout,
             )
         except requests.exceptions.RetryError:

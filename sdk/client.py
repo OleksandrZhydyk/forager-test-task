@@ -1,8 +1,10 @@
-"""Module for interaction with API clients"""
+"""Module for interaction with API clients."""
 
 from config import conf
-from sdk.filter import ConfidenceMoreThanFilter, ConfidenceLessThanFilter
-from sdk.models import EmailVerifierInput, DomainSearchInput
+
+from sdk.filter.email_filters import ConfidenceLessThanFilter, ConfidenceMoreThanFilter
+from sdk.models.domain_search_models import DomainSearchInput
+from sdk.models.verify_email_models import EmailVerifierInput
 from sdk.requester import BaseClient, RequestClient
 
 
@@ -12,7 +14,7 @@ class HunterIOClient:
     _base_url = 'https://api.hunter.io/'
     _api_version = 'v2'
 
-    def __init__(self, requester: BaseClient):
+    def __init__(self, requester: BaseClient) -> None:
         """Initialize class HunterIOClient instance and passed HTTP requester."""
         self.session = requester
 
@@ -24,7 +26,7 @@ class HunterIOClient:
         :return: EmailVerifierInput.
         """
         res = self.session.get(
-            f'{self._base_url}{self._api_version}/email-verifier',
+            '{base_url}{api_version}/email-verifier'.format(base_url=self._base_url, api_version=self._api_version),
             params={
                 'api_key': conf.hunterio_key,
                 'email': email,
@@ -34,10 +36,10 @@ class HunterIOClient:
 
     def get_email_by_domain(
         self,
-        domain: str = None,
-        company: str = None,
-        limit: int = None,
-        offset: int = None,
+        domain: str | None = None,
+        company: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
     ) -> DomainSearchInput:
         """
         Allow to get list of emails by specified criteria.
@@ -49,7 +51,7 @@ class HunterIOClient:
         :return: DomainSearchInput
         """
         res = self.session.get(
-            f'{self._base_url}{self._api_version}/domain-search',
+            '{base_url}{api_version}/domain-search'.format(base_url=self._base_url, api_version=self._api_version),
             params={
                 'api_key': conf.hunterio_key,
                 'domain': domain,
