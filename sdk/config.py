@@ -6,7 +6,9 @@ load_dotenv()
 
 
 class Config:
-    HUNTERIO_KEY = os.getenv("HUNTERIO_KEY")
+    """Represent the storage for config constants."""
+
+    hunterio_key = os.getenv('HUNTERIO_KEY')
 
 
 conf = Config()

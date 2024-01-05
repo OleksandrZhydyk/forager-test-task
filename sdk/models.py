@@ -1,6 +1,7 @@
 from typing import List, Any
 
 from pydantic.dataclasses import dataclass
+
 from sdk.filter import Filter, FilterChain
 
 
@@ -83,25 +84,39 @@ class DomainSearchInput:
     data: DomainSearchDataInput
     meta: DomainSearchMetaInput
 
-    def get_data(self) -> DomainSearchDataInput:
-        return self.data
-
-    def get_meta(self) -> DomainSearchMetaInput:
-        return self.meta
-
     def get_items(self, *filters: Filter) -> List[DomainSearchDataEmailsInput]:
+        """
+        Allow to filter received emails by specified filters.
+
+        :param filters: The instances by Filter class.
+        :return: The list of filtered emails.
+        """
         filter_chain = FilterChain()
         data = self.data.emails
-        for filter in filters:
-            filter_chain.add_filter(filter)
+        for filtr in filters:
+            filter_chain.add_filter(filtr)
         return filter_chain.apply_all(data)
 
     def get_item(self, email: str) -> DomainSearchDataEmailsInput:
+        """
+        Get all data by specified email.
+
+        :param email: By which email the data will be searched.
+        :return: Email data object.
+        """
         for user_data in self.data.emails:
             if user_data.value == email:
                 return user_data
 
     def update_item(self, email: str, update_field: str, update_value: Any) -> DomainSearchDataEmailsInput:
+        """
+        Update specified field in email data object.
+
+        :param email: By which email the data will be updated.
+        :param update_field: Which field in email data will be updated.
+        :param update_value: Which new value will be assigned to update_field.
+        :return: Updated email data object.
+        """
         for key, user_data in enumerate(self.data.emails):
             if hasattr(user_data, update_field):
                 if user_data.value == email:
@@ -111,14 +126,26 @@ class DomainSearchInput:
                 raise ValueError(f"{update_field} doesn't exist in {user_data}")
 
     def delete_item(self, email: str) -> bool | None:
+        """
+        Delete the specified email data object.
+
+        :param email: By which email the data will be deleted.
+        :return:
+        """
         for key, user_data in enumerate(self.data.emails):
             if user_data.value == email:
                 del self.data.emails[key]
                 return True
         raise ValueError(f"Item with {email} doesn't exist")
 
-    def create_item(self, email: DomainSearchDataEmailsInput):
-        self.data.emails.append(email)
+    def create_item(self, email_obj_data: DomainSearchDataEmailsInput) -> None:
+        """
+        Create email data object.
+
+        :param email_obj_data: The data that is needed to represent email data object.
+        :return: None.
+        """
+        self.data.emails.append(email_obj_data)
 
 
 @dataclass
