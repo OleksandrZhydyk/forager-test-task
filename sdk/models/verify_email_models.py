@@ -2,11 +2,12 @@
 
 from typing import List
 
+from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 
 @dataclass
-class EmailVerifierSourcesInput:
+class EmailVerifierSourcesInput(object):
     """Represents data structure of source that is related to the email."""
 
     domain: str
@@ -17,11 +18,11 @@ class EmailVerifierSourcesInput:
 
 
 @dataclass
-class EmailVerifierDataInput:
+class EmailVerifierDataInput(object):
     """Represents metaparams of email_verification response."""
 
     status: str
-    result: str
+    request_result: str = Field(..., alias='result')
     _deprecation_notice: str
     score: int
     email: str
@@ -38,22 +39,22 @@ class EmailVerifierDataInput:
 
 
 @dataclass
-class EmailVerifierMetaParamsInput:
+class EmailVerifierMetaParamsInput(object):
     """Represents metaparams of email_verification response."""
 
     email: str
 
 
 @dataclass
-class EmailVerifierMetaInput:
+class EmailVerifierMetaInput(object):
     """Represents metaparams of email_verification response."""
 
-    params: EmailVerifierMetaParamsInput
+    request_meta_params: EmailVerifierMetaParamsInput = Field(..., alias='params')
 
 
 @dataclass
-class EmailVerifierInput:
+class EmailVerifierInput(object):
     """Main dataclass for representation of email_validation response."""
 
-    data: EmailVerifierDataInput
+    full_email_data: EmailVerifierDataInput = Field(..., alias='data')
     meta: EmailVerifierMetaInput

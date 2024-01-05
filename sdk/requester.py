@@ -33,7 +33,7 @@ class RequestClient(BaseClient):
         request_params: Dict[str, str] | None = None,
         headers: Dict[str, str] | None = None,
         timeout: int = default_timeout,
-    ) -> Dict[Any] | None:
+    ) -> Dict[str, Any] | None:
         """
         Send HTTP GET request to the source.
 

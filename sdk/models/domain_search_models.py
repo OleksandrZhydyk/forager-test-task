@@ -1,14 +1,15 @@
 """The module represents data structures of response object on domain_search request."""
 
-from typing import Any, List
+from typing import Any, Iterable, List
 
+from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 from sdk.filter.base_filter import Filter, FilterChain
 
 
 @dataclass
-class DomainSearchSourcesInput:
+class DomainSearchSourcesInput(object):
     """Represents data structure of source that is related to the email."""
 
     domain: str
@@ -19,7 +20,7 @@ class DomainSearchSourcesInput:
 
 
 @dataclass
-class DomainSearchVerificationInput:
+class DomainSearchVerificationInput(object):
     """Represents data structure of verification key of domain_search data."""
 
     date: str | None
@@ -27,10 +28,10 @@ class DomainSearchVerificationInput:
 
 
 @dataclass
-class DomainSearchDataEmailsInput:
+class DomainSearchDataEmailsInput(object):
     """Represents data structure of emails from domain_search."""
 
-    value: str
+    domain_value: str = Field(..., alias='value')
     type: str
     confidence: int
     sources: List[DomainSearchSourcesInput] | None
@@ -46,7 +47,7 @@ class DomainSearchDataEmailsInput:
 
 
 @dataclass
-class DomainSearchDataInput:
+class DomainSearchDataInput(object):
     """Represents data structure of domain_search."""
 
     domain: str | None
@@ -73,7 +74,7 @@ class DomainSearchDataInput:
 
 
 @dataclass
-class DomainSearchMetaParamsInput:
+class DomainSearchMetaParamsInput(object):
     """Represents search meta params of domain_search."""
 
     domain: str | None
@@ -84,23 +85,23 @@ class DomainSearchMetaParamsInput:
 
 
 @dataclass
-class DomainSearchMetaInput:
+class DomainSearchMetaInput(object):
     """Represents metadata of domain_search."""
 
-    results: int
+    found_emails_qty: int = Field(..., alias='results')
     limit: int
     offset: int
-    params: DomainSearchMetaParamsInput
+    request_params: DomainSearchMetaParamsInput = Field(..., alias='params')
 
 
 @dataclass
-class DomainSearchInput:
+class DomainSearchInput(object):
     """Main dataclass for representation of domain_search response."""
 
-    data: DomainSearchDataInput
-    meta: DomainSearchMetaInput
+    domain_email_data: DomainSearchDataInput = Field(..., alias='data')
+    meta: DomainSearchMetaInput = Field(..., alias='meta')
 
-    def get_items(self, *filters: Filter) -> List[DomainSearchDataEmailsInput]:
+    def get_items(self, *filters: Filter) -> Iterable[DomainSearchDataEmailsInput]:
         """
         Allow to filter received emails by specified filters.
 
@@ -108,10 +109,10 @@ class DomainSearchInput:
         :return: The list of filtered emails.
         """
         filter_chain = FilterChain()
-        data = self.data.emails
+        emails = self.domain_email_data.emails
         for filtr in filters:
             filter_chain.add_filter(filtr)
-        return filter_chain.apply_all(data)
+        return filter_chain.apply_all(emails)
 
     def get_item(self, email: str) -> DomainSearchDataEmailsInput:
         """
@@ -120,7 +121,7 @@ class DomainSearchInput:
         :param email: By which email the data will be searched.
         :return: Email data object.
         """
-        for user_data in self.data.emails:
+        for user_data in self.domain_email_data.emails:
             if user_data.value == email:
                 return user_data
 
@@ -133,10 +134,10 @@ class DomainSearchInput:
         :param update_value: Which new value will be assigned to update_field.
         :return: Updated email data object.
         """
-        for key, user_data in enumerate(self.data.emails):
+        for key, user_data in enumerate(self.domain_email_data.emails):
             if self._is_obj_has_attr(user_data, update_field):
                 if user_data.value == email:
-                    setattr(self.data.emails[key], update_field, update_value)
+                    setattr(self.domain_email_data.emails[key], update_field, update_value)
                     return user_data
             else:
                 raise ValueError(
@@ -152,9 +153,9 @@ class DomainSearchInput:
         :param email: By which email the data will be deleted.
         :return:
         """
-        for key, user_data in enumerate(self.data.emails):
+        for key, user_data in enumerate(self.domain_email_data.emails):
             if user_data.value == email:
-                del self.data.emails[key]
+                self.domain_email_data.emails.pop(key)
                 return True
         raise ValueError("Item with {email} doesn't exist".format(email=email))
 

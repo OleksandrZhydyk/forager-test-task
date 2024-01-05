@@ -2,13 +2,12 @@
 
 from config import conf
 
-from sdk.filter.email_filters import ConfidenceLessThanFilter, ConfidenceMoreThanFilter
 from sdk.models.domain_search_models import DomainSearchInput
 from sdk.models.verify_email_models import EmailVerifierInput
-from sdk.requester import BaseClient, RequestClient
+from sdk.requester import BaseClient
 
 
-class HunterIOClient:
+class HunterIOClient(object):
     """Represents the API for working with hunter.io site."""
 
     _base_url = 'https://api.hunter.io/'
@@ -27,7 +26,7 @@ class HunterIOClient:
         """
         res = self.session.get(
             '{base_url}{api_version}/email-verifier'.format(base_url=self._base_url, api_version=self._api_version),
-            params={
+            request_params={
                 'api_key': conf.hunterio_key,
                 'email': email,
             },
@@ -52,7 +51,7 @@ class HunterIOClient:
         """
         res = self.session.get(
             '{base_url}{api_version}/domain-search'.format(base_url=self._base_url, api_version=self._api_version),
-            params={
+            request_params={
                 'api_key': conf.hunterio_key,
                 'domain': domain,
                 'company': company,
@@ -61,14 +60,3 @@ class HunterIOClient:
             },
         )
         return DomainSearchInput(**res)
-
-
-if __name__ == '__main__':
-    requester = RequestClient()
-    client = HunterIOClient(requester)
-    data = client.get_email_by_domain('intercom.io')
-    data.update_item('christine.curtin@intercom.io', 'value', 'a@a.com')
-    filter_confidence1 = ConfidenceMoreThanFilter(90)
-    filter_confidence2 = ConfidenceLessThanFilter(93)
-    filtered_data = data.get_items(filter_confidence1, filter_confidence2)
-    print(filtered_data)

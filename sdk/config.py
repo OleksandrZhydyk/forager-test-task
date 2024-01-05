@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class Config:
+class Config(object):
     """Represent the storage for config constants."""
 
     hunterio_key = os.getenv('HUNTERIO_KEY')
