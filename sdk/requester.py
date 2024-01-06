@@ -6,7 +6,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
-from sdk.exceptions import APIConnectionError, APIIncorrectRequestError, APIRetryExceededError
+from sdk.exceptions import APIConnectionError, APIRetryExceededError
+from sdk.utils import check_response_on_errors
 
 
 class BaseClient(ABC):
@@ -31,6 +32,14 @@ class BaseClient(ABC):
         timeout: Union[int, None] = None,
     ) -> Any:
         """Represent the required interface method for HTTP POST request."""
+
+    @abstractmethod
+    def patch(self) -> None:
+        """Represent the required interface method for HTTP PATCH request."""
+
+    @abstractmethod
+    def delete(self) -> None:
+        """Represent the required interface method for HTTP DELETE request."""
 
 
 class RequestClient(BaseClient):
@@ -71,7 +80,7 @@ class RequestClient(BaseClient):
             raise APIRetryExceededError()
         except requests.exceptions.ConnectionError:
             raise APIConnectionError()
-        return self._check_response_on_errors(res)
+        return check_response_on_errors(res)
 
     def post(
         self,
@@ -100,7 +109,15 @@ class RequestClient(BaseClient):
             raise APIRetryExceededError()
         except requests.exceptions.ConnectionError:
             raise APIConnectionError()
-        return self._check_response_on_errors(res)
+        return check_response_on_errors(res)
+
+    def patch(self) -> None:
+        """Represent the required interface method for HTTP PATCH request."""
+        raise NotImplementedError
+
+    def delete(self) -> None:
+        """Represent the required interface method for HTTP DELETE request."""
+        raise NotImplementedError
 
     def _get_session(self) -> requests.Session:
         session = requests.Session()
@@ -120,8 +137,3 @@ class RequestClient(BaseClient):
         }
         session.params = default_params
         return session
-
-    def _check_response_on_errors(self, res: requests.Response) -> Dict[str, Any] | None:
-        if res.ok:
-            return res.json()
-        raise APIIncorrectRequestError(res.status_code, res.json())
