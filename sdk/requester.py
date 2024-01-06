@@ -22,6 +22,16 @@ class BaseClient(ABC):
     ) -> Any:
         """Represent the required interface method for HTTP GET request."""
 
+    @abstractmethod
+    def post(
+        self,
+        url: str,
+        body_params: Dict[str, str | int | None] | None = None,
+        headers: Dict[str, str] | None = None,
+        timeout: Union[int, None] = None,
+    ) -> Any:
+        """Represent the required interface method for HTTP POST request."""
+
 
 class RequestClient(BaseClient):
     """Implementation HTTP request client by requests library."""
@@ -29,8 +39,9 @@ class RequestClient(BaseClient):
     default_timeout = 5  # seconds
     retry_interval = 0.3  # seconds
 
-    def __init__(self) -> None:
+    def __init__(self, token: str) -> None:
         """Initialize the request session."""
+        self.token = token
         self.session = self._get_session()
 
     def get(
@@ -60,9 +71,36 @@ class RequestClient(BaseClient):
             raise APIRetryExceededError()
         except requests.exceptions.ConnectionError:
             raise APIConnectionError()
-        if res.ok:
-            return res.json()
-        raise APIIncorrectRequestError(res.status_code, res.json())
+        return self._check_response_on_errors(res)
+
+    def post(
+        self,
+        url: str,
+        body_data: Dict[str, Any | None] | None = None,
+        headers: Dict[str, str] | None = None,
+        timeout: Union[int, None] = None,
+    ) -> Dict[str, Any] | None:
+        """
+        Send HTTP POST request to the source.
+
+        :param url: Requested url.
+        :param body_data: Request payload.
+        :param headers: Needed request headers.
+        :param timeout: Needed request timeout in seconds.
+        :return: Requested data or errors: (APIRetryExceededError, APIConnectionError, APIIncorrectRequestError)
+        """
+        try:
+            res = self.session.post(
+                url,
+                json=body_data,
+                headers=headers,
+                timeout=timeout,
+            )
+        except requests.exceptions.RetryError:
+            raise APIRetryExceededError()
+        except requests.exceptions.ConnectionError:
+            raise APIConnectionError()
+        return self._check_response_on_errors(res)
 
     def _get_session(self) -> requests.Session:
         session = requests.Session()
@@ -74,4 +112,16 @@ class RequestClient(BaseClient):
         )
         session.mount('https://', HTTPAdapter(max_retries=retries))
         session.mount('http://', HTTPAdapter(max_retries=retries))
+        return self._set_default_params(session)
+
+    def _set_default_params(self, session: requests.Session) -> requests.Session:
+        default_params = {
+            'api_key': self.token,
+        }
+        session.params = default_params
         return session
+
+    def _check_response_on_errors(self, res: requests.Response) -> Dict[str, Any] | None:
+        if res.ok:
+            return res.json()
+        raise APIIncorrectRequestError(res.status_code, res.json())

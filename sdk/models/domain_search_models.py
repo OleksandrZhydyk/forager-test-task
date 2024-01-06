@@ -27,11 +27,11 @@ class DomainSearchVerificationInput(object):
     status: str | None
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DomainSearchDataEmailsInput(object):
     """Represents data structure of emails from domain_search."""
 
-    domain_value: str = Field(..., alias='value')
+    email: str = Field(..., alias='value')
     type: str
     confidence: int
     sources: List[DomainSearchSourcesInput] | None
@@ -84,7 +84,7 @@ class DomainSearchMetaParamsInput(object):
     department: str | None
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DomainSearchMetaInput(object):
     """Represents metadata of domain_search."""
 
@@ -122,7 +122,7 @@ class DomainSearchInput(object):
         :return: Email data object.
         """
         for user_data in self.domain_email_data.emails:
-            if user_data.domain_value == email:
+            if user_data.email == email:
                 return user_data
         return None
 
@@ -137,7 +137,7 @@ class DomainSearchInput(object):
         """
         for key, user_data in enumerate(self.domain_email_data.emails):
             if self._is_obj_has_attr(user_data, update_field):
-                if user_data.domain_value == email:
+                if user_data.email == email:
                     setattr(self.domain_email_data.emails[key], update_field, update_value)
                     return user_data
             else:
@@ -158,7 +158,7 @@ class DomainSearchInput(object):
         :return:
         """
         for key, user_data in enumerate(self.domain_email_data.emails):
-            if user_data.domain_value == email:
+            if user_data.email == email:
                 self.domain_email_data.emails.pop(key)
                 return True
         raise ValueError("Item with {email} doesn't exist".format(email=email))

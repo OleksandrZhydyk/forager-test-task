@@ -17,7 +17,7 @@ class EmailVerifierSourcesInput(object):
     still_on_page: bool
 
 
-@dataclass
+@dataclass(kw_only=True)
 class EmailVerifierDataInput(object):
     """Represents metaparams of email_verification response."""
 
@@ -52,7 +52,7 @@ class EmailVerifierMetaInput(object):
     request_meta_params: EmailVerifierMetaParamsInput = Field(..., alias='params')
 
 
-@dataclass
+@dataclass(kw_only=True)
 class EmailVerifierInput(object):
     """Main dataclass for representation of email_validation response."""
 

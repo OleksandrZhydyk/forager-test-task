@@ -1,7 +1,5 @@
 """Module for interaction with API clients."""
 
-from config import conf
-
 from sdk.models.domain_search_models import DomainSearchInput
 from sdk.models.verify_email_models import EmailVerifierInput
 from sdk.requester import BaseClient
@@ -13,9 +11,9 @@ class HunterIOClient(object):
     _base_url = 'https://api.hunter.io/'
     _api_version = 'v2'
 
-    def __init__(self, requester: BaseClient) -> None:
-        """Initialize class HunterIOClient instance and passed HTTP requester."""
-        self.session = requester
+    def __init__(self, base_client: BaseClient) -> None:
+        """Initialize class HunterIOClient instance and passed HTTP base_client."""
+        self.base_client = base_client
 
     def verify_email(self, email: str) -> EmailVerifierInput:
         """
@@ -24,10 +22,9 @@ class HunterIOClient(object):
         :param email: Email that has to be verified.
         :return: EmailVerifierInput.
         """
-        res = self.session.get(
+        res = self.base_client.get(
             '{base_url}{api_version}/email-verifier'.format(base_url=self._base_url, api_version=self._api_version),
             request_params={
-                'api_key': conf.hunterio_key,
                 'email': email,
             },
         )
@@ -49,10 +46,9 @@ class HunterIOClient(object):
         :param offset: Pagination offset parameter.
         :return: DomainSearchInput
         """
-        res = self.session.get(
+        res = self.base_client.get(
             '{base_url}{api_version}/domain-search'.format(base_url=self._base_url, api_version=self._api_version),
             request_params={
-                'api_key': conf.hunterio_key,
                 'domain': domain,
                 'company': company,
                 'limit': limit,
