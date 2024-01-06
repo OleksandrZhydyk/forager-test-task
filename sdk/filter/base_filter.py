@@ -1,14 +1,16 @@
 """The module contains implementation of filtering."""
 
-from typing import Iterable, TypeVar
+from abc import ABC, abstractmethod
+from typing import Generic, Iterable, List, TypeVar
 
 FilterGeneric = TypeVar('FilterGeneric')
 
 
-class Filter(object):
+class Filter(ABC, Generic[FilterGeneric]):
     """Represent the required interface for all filters."""
 
-    def apply(self, input_data: Iterable[FilterGeneric]) -> Iterable[FilterGeneric]:
+    @abstractmethod
+    def apply(self, input_data: Iterable[FilterGeneric]) -> List[FilterGeneric]:
         """
         Represent the required interface method for applying filters.
 
@@ -20,11 +22,11 @@ class Filter(object):
 class FilterChain(object):
     """Collect filters and implement apply filters functionality to the data."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize FilterChain instance and storage for filters to apply."""
-        self.filters = []
+        self.filters: List[Filter] = []
 
-    def add_filter(self, filtr: Filter):
+    def add_filter(self, filtr: Filter) -> 'FilterChain':
         """
         Add specified filter to self.filters storage.
 

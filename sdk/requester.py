@@ -1,6 +1,6 @@
 """Represent all available classes to make a HTTP requests."""
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -13,7 +13,13 @@ class BaseClient(ABC):
     """Represent the required interface for classes that will implement HTTP request feature."""
 
     @abstractmethod
-    def get(self, *args, **kwargs):
+    def get(
+        self,
+        url: str,
+        request_params: Dict[str, str | int | None] | None = None,
+        headers: Dict[str, str] | None = None,
+        timeout: Union[int, None] = None,
+    ) -> Any:
         """Represent the required interface method for HTTP GET request."""
 
 
@@ -23,16 +29,16 @@ class RequestClient(BaseClient):
     default_timeout = 5  # seconds
     retry_interval = 0.3  # seconds
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the request session."""
         self.session = self._get_session()
 
     def get(
         self,
         url: str,
-        request_params: Dict[str, str] | None = None,
+        request_params: Dict[str, str | int | None] | None = None,
         headers: Dict[str, str] | None = None,
-        timeout: int = default_timeout,
+        timeout: Union[int, None] = default_timeout,
     ) -> Dict[str, Any] | None:
         """
         Send HTTP GET request to the source.

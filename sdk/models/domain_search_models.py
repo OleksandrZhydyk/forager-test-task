@@ -114,7 +114,7 @@ class DomainSearchInput(object):
             filter_chain.add_filter(filtr)
         return filter_chain.apply_all(emails)
 
-    def get_item(self, email: str) -> DomainSearchDataEmailsInput:
+    def get_item(self, email: str) -> DomainSearchDataEmailsInput | None:
         """
         Get all data by specified email.
 
@@ -122,8 +122,9 @@ class DomainSearchInput(object):
         :return: Email data object.
         """
         for user_data in self.domain_email_data.emails:
-            if user_data.value == email:
+            if user_data.domain_value == email:
                 return user_data
+        return None
 
     def update_item(self, email: str, update_field: str, update_value: Any) -> DomainSearchDataEmailsInput:
         """
@@ -136,7 +137,7 @@ class DomainSearchInput(object):
         """
         for key, user_data in enumerate(self.domain_email_data.emails):
             if self._is_obj_has_attr(user_data, update_field):
-                if user_data.value == email:
+                if user_data.domain_value == email:
                     setattr(self.domain_email_data.emails[key], update_field, update_value)
                     return user_data
             else:
@@ -145,6 +146,9 @@ class DomainSearchInput(object):
                         update_field=update_field, user_data=user_data,
                     ),
                 )
+        raise ValueError(
+            "{email} doesn't exist in received emails.".format(email=email),
+        )
 
     def delete_item(self, email: str) -> bool | None:
         """
@@ -154,7 +158,7 @@ class DomainSearchInput(object):
         :return:
         """
         for key, user_data in enumerate(self.domain_email_data.emails):
-            if user_data.value == email:
+            if user_data.domain_value == email:
                 self.domain_email_data.emails.pop(key)
                 return True
         raise ValueError("Item with {email} doesn't exist".format(email=email))
@@ -166,7 +170,7 @@ class DomainSearchInput(object):
         :param email_obj_data: The data that is needed to represent email data object.
         :return: None.
         """
-        self.data.emails.append(email_obj_data)
+        self.domain_email_data.emails.append(email_obj_data)
 
     def _is_obj_has_attr(self, email_obj: DomainSearchDataEmailsInput, attr: str) -> bool:
         try:
