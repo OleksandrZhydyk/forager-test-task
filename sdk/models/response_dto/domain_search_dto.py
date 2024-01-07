@@ -6,10 +6,11 @@ from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 from sdk.filter.base_filter import Filter, FilterChain
+from sdk.models.response_dto.base_response_dto import BaseResponseDTO
 
 
 @dataclass
-class DomainSearchSourcesInput(object):
+class DomainSearchSourcesResponse(object):
     """Represents data structure of source that is related to the email."""
 
     domain: str
@@ -20,7 +21,7 @@ class DomainSearchSourcesInput(object):
 
 
 @dataclass
-class DomainSearchVerificationInput(object):
+class DomainSearchVerificationResponse(object):
     """Represents data structure of verification key of domain_search data."""
 
     date: str | None
@@ -28,13 +29,13 @@ class DomainSearchVerificationInput(object):
 
 
 @dataclass(kw_only=True)
-class DomainSearchDataEmailsInput(object):
+class DomainSearchDataEmailsResponse(object):
     """Represents data structure of emails from domain_search."""
 
     email: str = Field(..., alias='value')
     type: str
     confidence: int
-    sources: List[DomainSearchSourcesInput] | None
+    sources: List[DomainSearchSourcesResponse] | None
     first_name: str | None
     last_name: str | None
     position: str | None
@@ -43,11 +44,11 @@ class DomainSearchDataEmailsInput(object):
     linkedin: str | None
     twitter: str | None
     phone_number: str | int | None
-    verification: DomainSearchVerificationInput | None
+    verification: DomainSearchVerificationResponse | None
 
 
 @dataclass
-class DomainSearchDataInput(object):
+class DomainSearchDataResponse(object):
     """Represents data structure of domain_search."""
 
     domain: str | None
@@ -69,12 +70,12 @@ class DomainSearchDataInput(object):
     city: str | None
     postal_code: str | None
     street: str | None
-    emails: List[DomainSearchDataEmailsInput]
+    emails: List[DomainSearchDataEmailsResponse]
     linked_domains: List[str]
 
 
 @dataclass
-class DomainSearchMetaParamsInput(object):
+class DomainSearchMetaParamsResponse(object):
     """Represents search meta params of domain_search."""
 
     domain: str | None
@@ -85,23 +86,23 @@ class DomainSearchMetaParamsInput(object):
 
 
 @dataclass(kw_only=True)
-class DomainSearchMetaInput(object):
+class DomainSearchMetaResponse(object):
     """Represents metadata of domain_search."""
 
     found_emails_qty: int = Field(..., alias='results')
     limit: int
     offset: int
-    request_params: DomainSearchMetaParamsInput = Field(..., alias='params')
+    request_params: DomainSearchMetaParamsResponse = Field(..., alias='params')
 
 
 @dataclass
-class DomainSearchInput(object):
+class DomainSearchResponse(BaseResponseDTO):
     """Main dataclass for representation of domain_search response."""
 
-    domain_email_data: DomainSearchDataInput = Field(..., alias='data')
-    meta: DomainSearchMetaInput = Field(..., alias='meta')
+    domain_email_data: DomainSearchDataResponse = Field(..., alias='data')
+    meta: DomainSearchMetaResponse = Field(..., alias='meta')
 
-    def get_items(self, *filters: Filter) -> Iterable[DomainSearchDataEmailsInput]:
+    def get_items(self, *filters: Filter) -> Iterable[DomainSearchDataEmailsResponse]:
         """
         Allow to filter received emails by specified filters.
 
@@ -114,7 +115,7 @@ class DomainSearchInput(object):
             filter_chain.add_filter(filtr)
         return filter_chain.apply_all(emails)
 
-    def get_item(self, email: str) -> DomainSearchDataEmailsInput | None:
+    def get_item(self, email: str) -> DomainSearchDataEmailsResponse | None:
         """
         Get all data by specified email.
 
@@ -126,7 +127,7 @@ class DomainSearchInput(object):
                 return user_data
         return None
 
-    def update_item(self, email: str, update_field: str, update_value: Any) -> DomainSearchDataEmailsInput:
+    def update_item(self, email: str, update_field: str, update_value: Any) -> DomainSearchDataEmailsResponse:
         """
         Update specified field in email data object.
 
@@ -163,7 +164,7 @@ class DomainSearchInput(object):
                 return True
         raise ValueError("Item with {email} doesn't exist".format(email=email))
 
-    def create_item(self, email_obj_data: DomainSearchDataEmailsInput) -> None:
+    def create_item(self, email_obj_data: DomainSearchDataEmailsResponse) -> None:
         """
         Create email data object.
 
@@ -172,7 +173,7 @@ class DomainSearchInput(object):
         """
         self.domain_email_data.emails.append(email_obj_data)
 
-    def _is_obj_has_attr(self, email_obj: DomainSearchDataEmailsInput, attr: str) -> bool:
+    def _is_obj_has_attr(self, email_obj: DomainSearchDataEmailsResponse, attr: str) -> bool:
         try:
             getattr(email_obj, attr)
         except AttributeError:

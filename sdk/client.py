@@ -1,58 +1,31 @@
 """Module for interaction with API clients."""
+from typing import Dict
 
-from sdk.models.domain_search_models import DomainSearchInput
-from sdk.models.verify_email_models import EmailVerifierInput
+from sdk.models.api_call_dto import APIRoute
+from sdk.models.response_dto.base_response_dto import BaseResponseDTO
 from sdk.requester import BaseClient
 
 
 class HunterIOClient(object):
     """Represents the API for working with hunter.io site."""
 
-    _base_url = 'https://api.hunter.io/'
-    _api_version = 'v2'
-
     def __init__(self, base_client: BaseClient) -> None:
         """Initialize class HunterIOClient instance and passed HTTP base_client."""
         self.base_client = base_client
 
-    def verify_email(self, email: str) -> EmailVerifierInput:
-        """
-        Verify email validation by requesting hunter.io endpoint.
-
-        :param email: Email that has to be verified.
-        :return: EmailVerifierInput.
-        """
-        res = self.base_client.get(
-            '{base_url}{api_version}/email-verifier'.format(base_url=self._base_url, api_version=self._api_version),
-            request_params={
-                'email': email,
-            },
-        )
-        return EmailVerifierInput(**res)
-
-    def get_email_by_domain(
+    def call_api(
         self,
-        domain: str | None = None,
-        company: str | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
-    ) -> DomainSearchInput:
+        api_route: APIRoute,
+        request_params: Dict[str, str | int | float] | None = None,
+        request_payload: Dict[str, str | int | float] | None = None,
+    ) -> BaseResponseDTO | None:
         """
-        Allow to get list of emails by specified criteria.
+        Allow to make request to the API.
 
-        :param domain: Domain where email was registered.
-        :param company: Company where email was registered.
-        :param limit: Limit quantity of emails by page.
-        :param offset: Pagination offset parameter.
-        :return: DomainSearchInput
+        :param api_route: Instance of :class: APIRoute that contains all needed info to process the request.
+        :param request_params: Query parameters for the request.
+        :param request_payload: Body payload for the request.
+        :return: Correspond to APIRoute DTO or errors:
+            APIRetryExceededError, APIConnectionError, APIIncorrectRequestError.
         """
-        res = self.base_client.get(
-            '{base_url}{api_version}/domain-search'.format(base_url=self._base_url, api_version=self._api_version),
-            request_params={
-                'domain': domain,
-                'company': company,
-                'limit': limit,
-                'offset': offset,
-            },
-        )
-        return DomainSearchInput(**res)
+        return self.base_client.call_api(api_route, request_params, request_payload)

@@ -5,9 +5,11 @@ from typing import List
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
+from sdk.models.response_dto.base_response_dto import BaseResponseDTO
+
 
 @dataclass
-class EmailVerifierSourcesInput(object):
+class EmailVerifierSourcesResponse(object):
     """Represents data structure of source that is related to the email."""
 
     domain: str
@@ -18,7 +20,7 @@ class EmailVerifierSourcesInput(object):
 
 
 @dataclass(kw_only=True)
-class EmailVerifierDataInput(object):
+class EmailVerifierDataResponse(object):
     """Represents metaparams of email_verification response."""
 
     status: str
@@ -35,26 +37,26 @@ class EmailVerifierDataInput(object):
     smtp_check: bool
     accept_all: bool
     block: bool
-    sources: List[EmailVerifierSourcesInput]
+    sources: List[EmailVerifierSourcesResponse]
 
 
 @dataclass
-class EmailVerifierMetaParamsInput(object):
+class EmailVerifierMetaParamsResponse(object):
     """Represents metaparams of email_verification response."""
 
     email: str
 
 
 @dataclass
-class EmailVerifierMetaInput(object):
+class EmailVerifierMetaResponse(object):
     """Represents metaparams of email_verification response."""
 
-    request_meta_params: EmailVerifierMetaParamsInput = Field(..., alias='params')
+    request_meta_params: EmailVerifierMetaParamsResponse = Field(..., alias='params')
 
 
 @dataclass(kw_only=True)
-class EmailVerifierInput(object):
+class EmailVerifierResponse(BaseResponseDTO):
     """Main dataclass for representation of email_validation response."""
 
-    full_email_data: EmailVerifierDataInput = Field(..., alias='data')
-    meta: EmailVerifierMetaInput
+    full_email_data: EmailVerifierDataResponse = Field(..., alias='data')
+    meta: EmailVerifierMetaResponse
