@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from dataclasses import asdict
 from typing import Any, Type
 
-from requests import PreparedRequest, Request, Session, adapters
+from requests import PreparedRequest, Request, Session, adapters, exceptions
 from urllib3 import Retry
 
+from sdk.exceptions import APIConnectionError, APIIncorrectRequestError, APIRetryExceededError
 from sdk.models.api_call_dto import APIRoute, HTTPMethod
 from sdk.models.request_dto.base_params import RequestParams
 from sdk.models.request_dto.base_payload import RequestPayload
@@ -60,8 +61,16 @@ class RequestClient(BaseClient):
         prepared_request = self._build_request(
             api_route.method.value, api_route.endpoint, processed_params, processed_payload,
         )
-        res = self.session.send(prepared_request, timeout=self.default_timeout)
-        res.raise_for_status()
+        try:
+            res = self.session.send(prepared_request, timeout=self.default_timeout)
+        except exceptions.RetryError:
+            raise APIRetryExceededError()
+        except exceptions.ConnectionError:
+            raise APIConnectionError()
+        try:
+            res.raise_for_status()
+        except exceptions.HTTPError:
+            raise APIIncorrectRequestError(res.status_code, res.json())
         return api_route.response_dto(**res.json())
 
     def _build_request(
