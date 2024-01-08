@@ -1,9 +1,9 @@
 """Module for interaction with API clients."""
-from typing import Dict
 
 from sdk.models.api_call_dto import APIRoute
 from sdk.models.response_dto.base_response_dto import BaseResponseDTO
 from sdk.requester import BaseClient
+from sdk.typings import RequestInputs
 
 
 class HunterIOClient(object):
@@ -16,16 +16,13 @@ class HunterIOClient(object):
     def call_api(
         self,
         api_route: APIRoute,
-        request_params: Dict[str, str | int | float] | None = None,
-        request_payload: Dict[str, str | int | float] | None = None,
+        request_inputs: RequestInputs | None = None,
     ) -> BaseResponseDTO | None:
         """
         Allow to make request to the API.
 
         :param api_route: Instance of :class: APIRoute that contains all needed info to process the request.
-        :param request_params: Query parameters for the request.
-        :param request_payload: Body payload for the request.
-        :return: Correspond to APIRoute DTO or errors:
-            APIRetryExceededError, APIConnectionError, APIIncorrectRequestError.
+        :param request_inputs: Query parameters or body payload for the request, depends on HTTP method.
+        :return: Correspond to APIRoute DTO or requests.exceptions.HTTPError.
         """
-        return self.base_client.call_api(api_route, request_params, request_payload)
+        return self.base_client.call_api(api_route, request_inputs)
