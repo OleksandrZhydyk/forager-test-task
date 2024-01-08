@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from sdk.exceptions import KeyAlreadyExistsError, KeyNotFoundError
+from sdk.exceptions.data_manager_errors import KeyAlreadyExistsError, KeyNotFoundError
 
 
 class DataManager(object):

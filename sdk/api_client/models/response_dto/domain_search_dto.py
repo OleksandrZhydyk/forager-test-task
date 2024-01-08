@@ -5,8 +5,8 @@ from typing import Any, Iterable, List
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
+from sdk.api_client.models.response_dto.base_response_dto import BaseResponseDTO
 from sdk.filter.base_filter import Filter, FilterChain
-from sdk.models.response_dto.base_response_dto import BaseResponseDTO
 
 
 @dataclass

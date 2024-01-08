@@ -2,8 +2,8 @@
 
 from typing import Iterable, List
 
+from sdk.api_client.models.response_dto.domain_search_dto import DomainSearchDataEmailsResponse
 from sdk.filter.base_filter import Filter
-from sdk.models.response_dto.domain_search_dto import DomainSearchDataEmailsResponse
 
 
 class FirstNameFilter(Filter[DomainSearchDataEmailsResponse]):

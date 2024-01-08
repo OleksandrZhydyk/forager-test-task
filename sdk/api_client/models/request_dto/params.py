@@ -2,7 +2,7 @@
 
 from pydantic.dataclasses import dataclass
 
-from sdk.models.request_dto.base_params import RequestParams
+from sdk.api_client.models.request_dto.base_params import RequestParams
 
 
 @dataclass
@@ -13,6 +13,15 @@ class EmailsByDomain(RequestParams):
     company: str | None = None
     limit: int | None = None
     offset: int | None = None
+
+    def __post_init__(self) -> None:
+        """Call after all data was assign to the field and runs a validation."""
+        self.validate_fields()
+
+    def validate_fields(self) -> None:
+        """Validate if at least one, company or domain field has value."""
+        if not self.domain and not self.company:
+            raise ValueError('At least one of domain or company should have a value.')
 
 
 @dataclass
