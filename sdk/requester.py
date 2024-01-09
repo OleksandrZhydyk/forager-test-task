@@ -6,10 +6,9 @@ from typing import Any, Type
 from requests import PreparedRequest, Request, Session, adapters
 from urllib3 import Retry
 
-from sdk.api_client.models.api_call_dto import APIRoute
-from sdk.api_client.models.request_dto.base_params import RequestParams
-from sdk.api_client.models.request_dto.base_payload import RequestPayload
-from sdk.api_client.models.response_dto.base_response_dto import BaseResponseDTO
+from sdk.models.api_call_dto import APIRoute
+from sdk.models.request_dto.base_params import RequestParams
+from sdk.models.request_dto.base_payload import RequestPayload
 from sdk.typings import RequestInputs
 
 
@@ -44,7 +43,7 @@ class RequestClient(BaseClient):
         api_route: APIRoute,
         request_params: RequestInputs | None = None,
         request_payload: RequestInputs | None = None,
-    ) -> BaseResponseDTO | None:
+    ) -> Any | None:
         """
         Check incoming request data and make corresponding request to the API.
 

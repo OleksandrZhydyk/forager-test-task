@@ -2,7 +2,7 @@
 
 from pydantic.dataclasses import dataclass
 
-from sdk.api_client.models.request_dto.base_params import RequestParams
+from sdk.models.request_dto.base_params import RequestParams
 
 
 @dataclass

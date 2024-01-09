@@ -24,8 +24,7 @@ To trigger a specific API route, call the `call_api` method of the client with t
 ```python
 import os
 
-from 'package_name'.sdk.api_client.api_routes import GET_EMAILS_BY_DOMAIN
-from 'package_name'.sdk.api_client.client import HunterIOClient
+from 'package_name'.sdk.client import HunterIOClient
 from 'package_name'.sdk.models.response_dto.domain_search_dto import DomainSearchResponse
 
 
@@ -34,7 +33,7 @@ client = HunterIOClient(token=os.environ['HUNTERIO_API_KEY'])
 
 # Request API endpoint
 def get_email_by_domain() -> DomainSearchResponse:
-    domain_emails = client.call_api(api_route=GET_EMAILS_BY_DOMAIN, request_params={'domain': 'intercom.io'})
+    domain_emails = client.call_api(api_route=client.get_emals_by_domain, request_params={'domain': 'intercom.io'})
     return domain_emails
 ```
 
@@ -48,7 +47,7 @@ from 'package_name'.sdk.data_manager import DataManager
 
 some_data = 'some_data'
 data_manager = DataManager()
-unique_key = uuid.uuid4()
+unique_key = str(uuid.uuid4())
 
 # Add data to storage
 data_manager.add_data(key=unique_key, data_to_store=some_data)
@@ -66,14 +65,27 @@ deleted_data_key = data_manager.delete(key=unique_key)
 storage_data = data_manager.get_all_stored_data()
 ```
 
-### Email validator usage
+### Email processor usage
 
 ```python
-from 'package_name'.sdk.email_validator import EmailValidator
+import os
+
+from 'package_name'.sdk.client import HunterIOClient
+from 'package_name'.data_manager.manager import DataManager
+from 'package_name'.processors.email_processor import EmailProcessor
 
 
-email_to_validate = 'test@email.com'
+email_to_save = 'test@email.com'
 
-def is_email_valid() -> bool:
-    return EmailValidator.validate_email(email_to_validate)
+# Initialize API client
+client = HunterIOClient(token=os.environ['HUNTERIO_API_KEY'])
+
+# Initialize storage client
+data_manager = DataManager()
+
+email_proccessor = EmailProcessor(client, data_manager)
+
+# Validate and save the email to storage.
+validated_email = email_proccessor.save_email(email_to_save)
+
 ```

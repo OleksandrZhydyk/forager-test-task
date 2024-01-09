@@ -2,10 +2,11 @@
 
 from typing import Any, Dict
 
-from sdk.exceptions.data_manager_errors import KeyAlreadyExistsError, KeyNotFoundError
+from data_manager.data_manager_errors import KeyAlreadyExistsError, KeyNotFoundError
+from data_manager.interface import BaseManager
 
 
-class DataManager(object):
+class DataManager(BaseManager):
     """The class represents methods for data saving and manipulating."""
 
     def __init__(self) -> None:

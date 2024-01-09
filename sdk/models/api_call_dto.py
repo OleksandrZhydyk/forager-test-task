@@ -5,9 +5,9 @@ from typing import Type
 
 from pydantic import BaseModel
 
-from sdk.api_client.models.request_dto.base_params import RequestParams
-from sdk.api_client.models.request_dto.base_payload import RequestPayload
-from sdk.api_client.models.response_dto.base_response_dto import BaseResponseDTO
+from sdk.models.request_dto.base_params import RequestParams
+from sdk.models.request_dto.base_payload import RequestPayload
+from sdk.models.response_dto.base_response_dto import BaseResponseDTO
 
 
 class HTTPMethod(enum.Enum):
