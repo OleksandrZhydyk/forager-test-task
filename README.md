@@ -42,7 +42,7 @@ In order to save and make further data modification, you may use `DataManager`.
 ```python
 import uuid 
 
-from 'package_name'.sdk.data_manager import DataManager
+from 'package_name'.data_manager.manager import DataManager
 
 
 some_data = 'some_data'
