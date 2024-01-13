@@ -18,7 +18,7 @@ class BaseClient(ABC):
     @abstractmethod
     def call_api(
         self,
-        api_route: APIRoute,
+        api_route: 'APIRoute',
         request_params: RequestInputs | None = None,
         request_payload: RequestInputs | None = None,
     ) -> Any:
@@ -31,16 +31,16 @@ class RequestClient(BaseClient):
     default_timeout = 5  # seconds
     retry_interval = 0.3  # seconds
 
-    def __init__(self, token: str | None) -> None:
+    def __init__(self, api_key: str | None) -> None:
         """Initialize the request session."""
-        if not isinstance(token, str):
+        if not isinstance(api_key, str):
             raise ValueError('The token argument has to be a <class: str>')
-        self.token = token
+        self.api_key = api_key
         self.session = self._get_session()
 
     def call_api(
         self,
-        api_route: APIRoute,
+        api_route: 'APIRoute',
         request_params: RequestInputs | None = None,
         request_payload: RequestInputs | None = None,
     ) -> Any | None:
@@ -106,7 +106,7 @@ class RequestClient(BaseClient):
 
     def _set_default_params(self, session: Session) -> Session:
         default_params = {
-            'api_key': self.token,
+            'api_key': self.api_key,
         }
         session.params = default_params
         return session

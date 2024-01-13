@@ -38,7 +38,7 @@ class EmailProcessor(object):
         """
         if not bool(self.email_pattern.match(email)):
             raise ValueError('Email {email} is not valid.'.format(email=email))
-        res = self.client.call_api(self.client.verify_email, {'email': email})
+        res = self.client.email_verification_handler.verify_email(request_params={'email': email})
         if res and getattr(res, 'full_email_data', None) and res.full_email_data.status == 'valid':
             return email
         raise ValueError('Email {email} is not accessible.'.format(email=email))

@@ -25,15 +25,15 @@ To trigger a specific API route, call the `call_api` method of the client with t
 import os
 
 from 'package_name'.sdk.client import HunterIOClient
-from 'package_name'.sdk.models.response_dto.domain_search_dto import DomainSearchResponse
+from 'package_name'.sdk.models.response_dto.verify_email_dto import EmailVerifierResponse
 
 
 # Initialize API client
 client = HunterIOClient(token=os.environ['HUNTERIO_API_KEY'])
 
 # Request API endpoint
-def get_email_by_domain() -> DomainSearchResponse:
-    domain_emails = client.call_api(api_route=client.get_emals_by_domain, request_params={'domain': 'intercom.io'})
+def get_email_by_domain() -> EmailVerifierResponse:
+    domain_emails = client.email_verification_handler.verify_email(request_params={'email': 'test@test.com'})
     return domain_emails
 ```
 
